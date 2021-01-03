@@ -1,0 +1,30 @@
+<h1>Sub accounts of [{{parentAccount.description}}]</h1>
+[ <a href="#!subaccounts/{{parentAccount.id}}">Sub Accounts</a> | <a href="#!cadastrosubaccount/{{parentAccount.id}}">Registration sub accounts</a> ]
+
+<form name="cadastroSubAccountsForm">
+    <fieldset>
+        <div class="row">
+            <label for="code">Code </label>
+            <input id="code" name="code" type="text" ng-model="subaccount.id" readonly/>
+        </div>
+
+        <div class="row">
+            <label for="description">Description </label>
+            <input id="description" name="description" type="text" ng-model="subaccount.description" minlength="3" required autofocus/>
+            <span class="w3-text-red" ng-show="cadastroSubAccountsForm.description.$dirty && cadastroSubAccountsForm.description.$error.required">O campo description é obrigatório!</span>
+        </div>
+
+<!--        <div class="row">
+            <label for="preco">Preço: </label>
+            <input id="preco" name="preco" type="number" ng-model="subaccount.preco" required/>
+            <span class="w3-text-red" ng-show="cadastroAccountsForm.preco.$dirty && cadastroAccountsForm.preco.$error.required">O campo preço é obrigatório!</span>
+        </div>-->
+    </fieldset>
+
+    <div class="row">
+        <button ng-click="salvar(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Salvar </button>
+        <button ng-click="salvarCadastrarNovo(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Salvar e Cadastrar Novo </button>
+        <button ng-click="cancelar()"> Cancelar </button>
+    </div>
+</form>
+

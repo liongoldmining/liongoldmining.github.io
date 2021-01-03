@@ -1,102 +1,303 @@
-var app = angular.module('produtosApp', ['ngRoute', 'ngResource']);
+var app = angular.module('accountsApp', ['ngRoute', 'ngResource']);
+
+var baseUrl = "http://liongoldmining-investor.herokuapp.com";
 
 app.config(function ($routeProvider) {
 
     $routeProvider.when('/cadastro', {
-        controller: 'CadastroProdutosController',
+        controller: 'CadastroAccountsController',
         templateUrl: 'templates/cadastro.html'
     }).when('/cadastro/:id', {
-        controller: 'CadastroProdutosController',
+        controller: 'CadastroAccountsController',
         templateUrl: 'templates/cadastro.html'
-    }).when('/tabela', {
-        controller: 'TabelaProdutosController',
-        templateUrl: 'templates/tabela.html'
-    }).otherwise('/tabela');
+    }).when('/accounts', {
+        controller: 'TabelaAccountsController',
+        templateUrl: 'templates/accounts.html'
+    }).when('/subaccounts/:id', {
+        controller: 'SubAccountsController',
+        templateUrl: 'templates/subaccounts.html'
+    }).when('/accounttransactions/:id', {
+        controller: 'TransactionsController',
+        templateUrl: 'templates/accounttransactions.html'
+    }).when('/cadastrosubaccount/:id', {
+        controller: 'CadastroSubAccountsController',
+        templateUrl: 'templates/cadastrosubaccount.html'
+    }).when('/cadastrosubaccount/:id/:subid', {
+        controller: 'CadastroSubAccountsController',
+        templateUrl: 'templates/cadastrosubaccount.html'
+    }).when('/cadastrotransaction/:subid', {
+        controller: 'CadastroTransactionController',
+        templateUrl: 'templates/cadastrotransaction.html'
+    }).when('/cadastrotransaction/:subid/:tid', {
+        controller: 'CadastroTransactionController',
+        templateUrl: 'templates/cadastrotransaction.html'
+    }).otherwise('/accounts');
 
 });
 
-app.controller('TabelaProdutosController', function ($scope, ProdutosService) {
+app.controller('TabelaAccountsController', function ($scope, AccountsService) {
 
     listar();
 
     function listar() {
-        ProdutosService.listar().then(function (produtos) {
-            $scope.produtos = produtos;
+        AccountsService.listar().then(function (accounts) {
+            $scope.accounts = accounts;
         });
     }
 
-    $scope.excluir = function (produto) {
-        ProdutosService.excluir(produto).then(listar);
+    $scope.excluir = function (account) {
+        AccountsService.excluir(account).then(listar);
     };
 });
 
-app.controller('CadastroProdutosController', function ($routeParams, $scope, $location, ProdutosService) {
+app.controller('SubAccountsController', function ($routeParams, $scope, $location, AccountsService, SubAccountsService) {
+
+    var id = $routeParams.id;
+
+    listarSubAccounts(id);
+    
+    function listarSubAccounts(id) {
+        AccountsService.getAccount(id).then(function (account) {
+            $scope.account = account;
+            $scope.subaccounts = account.subAccounts;
+        });
+    }    
+    
+    $scope.excluir = function (subaccount) {
+        SubAccountsService.excluir(subaccount).then(redirecionarTabela());
+    };
+    
+    function redirecionarTabela() {
+        listarSubAccounts(id);
+    };       
+});
+
+app.controller('TransactionsController', function ($routeParams, $scope, $location, SubAccountsService) {
 
     var id = $routeParams.id;
 
     if (id) {
-        ProdutosService.getProduto(id).then(function (produto) {
-            $scope.produto = produto;
+        SubAccountsService.getAccount(id).then(function (subaccount) {
+            $scope.account = subaccount.parentAccount;
+            $scope.subaccount = subaccount;
+            $scope.accountTransactions = subaccount.accountTransactions;
         });
     } else {
-        $scope.produto = {};
+        listarSubAccounts();
+    }
+    
+    
+    function listarSubAccounts() {
+        SubAccountsService.listar().then(function (subaccount) {
+            $scope.accountTransactions = subaccount.accountTransactions;
+        });
+    }    
+    
+    $scope.excluir = function (subaccount) {
+        SubAccountsService.excluir(subaccount).then(listarSubAccounts);
+    };
+       
+});
+
+app.controller('CadastroSubAccountsController', function ($routeParams, $scope, $location, AccountsService, SubAccountsService) {
+
+    var id = $routeParams.id;
+    var subid = $routeParams.subid;
+
+
+    AccountsService.getAccount(id).then(function (account) {
+        $scope.parentAccount = account;
+    });
+    
+    if (subid) {
+        SubAccountsService.getAccount(subid).then(function (subaccount) {
+            $scope.subaccount = subaccount;
+        });
+    } else {
+        $scope.subaccount = {parentAccount: $scope.account};
     }
 
 
-    function salvar(produto) {
-        $scope.produto = {};
-        return ProdutosService.salvar(produto);
-    }
-    ;
-
-    $scope.salvar = function (produto) {
-        $scope.cadastroProdutosForm.$setPristine();
-        salvar(produto).then(redirecionarTabela);
+    function salvar(id, subaccount) {
+        $scope.subaccount = {parentAccount: $scope.parentAccount};
+        return SubAccountsService.salvar(id, subaccount);
     };
 
-    $scope.salvarCadastrarNovo = function (produto) {
-        $scope.cadastroProdutosForm.$setPristine();
-        salvar(produto);
+    $scope.salvar = function (id, subaccount) {
+        $scope.cadastroSubAccountsForm.$setPristine();
+        salvar(id, subaccount).then(redirecionarTabela);
+    };
+
+    $scope.salvarCadastrarNovo = function (subaccount) {
+        $scope.cadastroSubAccountsForm.$setPristine();
+        salvar(subaccount);
     };
 
     function redirecionarTabela() {
-        $location.path('/tabela');
-    }
-    ;
+        $location.path('/subaccounts/' + id);
+    };
 
     $scope.cancelar = function () {
-        $scope.produto = {};
+        $scope.subaccount = {};
         redirecionarTabela();
     };
 });
 
-app.service('ProdutosService', function (ProdutosResource) {
+app.controller('CadastroTransactionController', function ($routeParams, $scope, $location, SubAccountsService, TransactionsService) {
 
-    this.getProduto = function (id) {
-        return ProdutosResource.getProduto({id: id}).$promise;
+    var subid = $routeParams.subid;
+    var transactionId = $routeParams.tid;
+
+
+    SubAccountsService.getAccount(subid).then(function (subaccount) {
+        $scope.account = subaccount.parentAccount;
+        $scope.subaccount = subaccount;
+    });
+    
+    if (transactionId) {
+        TransactionsService.getTransaction(transactionId).then(function (transaction) {
+            $scope.transaction = transaction;
+        });
+    } else {
+        $scope.transaction = {account: $scope.subaccount};
+    }
+
+
+    function salvar(id, transaction) {
+        $scope.subaccount = {account: $scope.subaccount};
+        return TransactionsService.salvar(id, transaction);
+    };
+
+    $scope.salvar = function (id, transaction) {
+        $scope.cadastroTransactionForm.$setPristine();
+        salvar(id, transaction).then(redirecionarTabela);
+    };
+
+    $scope.salvarCadastrarNovo = function (transaction) {
+        $scope.cadastroTransactionForm.$setPristine();
+        salvar(transaction);
+    };
+
+    function redirecionarTabela() {
+        $location.path('/accounttransactions/' + subid);
+    }
+    ;
+
+    $scope.cancelar = function () {
+        $scope.transaction = {};
+        redirecionarTabela();
+    };
+});
+
+
+app.controller('CadastroAccountsController', function ($routeParams, $scope, $location, AccountsService) {
+
+    var id = $routeParams.id;
+
+    if (id) {
+        AccountsService.getAccount(id).then(function (account) {
+            $scope.account = account;
+        });
+    } else {
+        $scope.account = {};
+    }
+
+
+    function salvar(account) {
+        $scope.account = {};
+        return AccountsService.salvar(account);
+    }
+    ;
+
+    $scope.salvar = function (account) {
+        $scope.cadastroAccountsForm.$setPristine();
+        salvar(account).then(redirecionarTabela);
+    };
+
+    $scope.salvarCadastrarNovo = function (account) {
+        $scope.cadastroAccountsForm.$setPristine();
+        salvar(account);
+    };
+
+    function redirecionarTabela() {
+        $location.path('/accounts');
+    }
+    ;
+
+    $scope.cancelar = function () {
+        $scope.account = {};
+        redirecionarTabela();
+    };
+});
+
+app.service('AccountsService', function (AccountsResource) {
+
+    this.getAccount = function (id) {
+        return AccountsResource.getAccount({id: id}).$promise;
     };
 
     this.listar = function () {
-        return ProdutosResource.listar().$promise;
+        return AccountsResource.listar().$promise;
     };
 
-    this.salvar = function (produto) {
-        if (produto.id) {
-            return ProdutosResource.atualizar({id: produto.id}, produto).$promise;
+    this.salvar = function (account) {
+        if (account.id) {
+            return AccountsResource.atualizar({id: account.id}, account).$promise;
         } else {
-            return ProdutosResource.salvar(produto).$promise;
+            return AccountsResource.salvar(account).$promise;
         }
     };
 
-    this.excluir = function (produto) {
-        return ProdutosResource.excluir({id: produto.id}).$promise;
+    this.excluir = function (account) {
+        return AccountsResource.excluir({id: account.id}).$promise;
     };
 
 });
 
-app.factory('ProdutosResource', function ($resource) {
-//    return $resource('http://localhost:8080/api/produtos/:id', {}, {
-    return $resource('https://api-rest-produtos-tales.herokuapp.com/api/produtos/:id', {}, {
+app.service('SubAccountsService', function (SubAccountsResource) {
+
+    this.getAccount = function (id) {
+        return SubAccountsResource.getAccount({id: id}).$promise;
+    };
+
+    this.listar = function () {
+        return SubAccountsResource.listar().$promise;
+    };
+
+    this.salvar = function (id, subAccount) {
+        return SubAccountsResource.atualizar({id: id}, subAccount).$promise;
+    };
+
+    this.excluir = function (subAccount) {
+        return SubAccountsResource.excluir({id: subAccount.id}).$promise;
+    };
+
+});
+
+app.service('TransactionsService', function (TransactionsResource) {
+
+    this.getTransaction = function (id) {
+        return TransactionsResource.getTransaction({id: id}).$promise;
+    };
+
+    this.listar = function () {
+        return TransactionsResource.listar().$promise;
+    };
+
+    this.salvar = function (id, transaction) {
+        return TransactionsResource.atualizar({id: id}, transaction).$promise;
+    };
+
+    this.excluir = function (transaction) {
+        return TransactionsResource.excluir({id: transaction.id}).$promise;
+    };
+
+});
+
+app.factory('AccountsResource', function ($resource) {
+    return $resource(baseUrl + '/lionapi/accounts/:id', {}, {
+//    return $resource('http://localhost:8080/CRUD-back/api/accounts/:id', {}, {
+//    return $resource('https://api-rest-accounts-tales.herokuapp.com/api/accounts/:id', {}, {
         atualizar: {
             method: 'PUT'
         },
@@ -104,7 +305,55 @@ app.factory('ProdutosResource', function ($resource) {
             method: 'GET',
             isArray: true
         },
-        getProduto: {
+        getAccount: {
+            method: 'GET'
+        },
+        salvar: {
+            method: 'POST'
+        },
+        excluir: {
+            method: 'DELETE'
+        }
+
+    });
+});
+
+app.factory('SubAccountsResource', function ($resource) {
+    return $resource(baseUrl + '/lionapi/subaccounts/:id', {}, {
+//    return $resource('http://localhost:8080/CRUD-back/api/accounts/:id', {}, {
+//    return $resource('https://api-rest-accounts-tales.herokuapp.com/api/accounts/:id', {}, {
+        atualizar: {
+            method: 'PUT'
+        },
+        listar: {
+            method: 'GET',
+            isArray: true,
+        },
+        getAccount: {
+            method: 'GET'
+        },
+        salvar: {
+            method: 'POST'
+        },
+        excluir: {
+            method: 'DELETE'
+        }
+
+    });
+});
+
+app.factory('TransactionsResource', function ($resource) {
+    return $resource(baseUrl + '/lionapi/transactions/:id', {}, {
+//    return $resource('http://localhost:8080/CRUD-back/api/accounts/:id', {}, {
+//    return $resource('https://api-rest-accounts-tales.herokuapp.com/api/accounts/:id', {}, {
+        atualizar: {
+            method: 'PUT'
+        },
+        listar: {
+            method: 'GET',
+            isArray: true
+        },
+        getTransaction: {
             method: 'GET'
         },
         salvar: {

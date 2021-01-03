@@ -1,0 +1,33 @@
+<h1>Account of [{{account.description}}] <br/> Transactions of Sub Account [{{subaccount.description}}]</h1>
+[ <a href="#!accounttransactions/{{subaccount.id}}">Transactions</a> | <a href="#!cadastrotransaction/{{subaccount.id}}">Registration transactions</a> ]
+
+<div class="w3-container">
+
+<table class="w3-table-all">
+    <thead>
+        <tr class="w3-green">
+            <th>Code</th>
+            <th>Description</th>
+            <th>Payment</th>
+            <th>Proof</th>
+            <th>Deposit</th>
+            <th>Balance</th>
+<!--            <th></th>-->
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-ng-repeat="transaction in accountTransactions track by $index" ng-dblclick="editar(subaccount)" class="w3-hover-blue">
+            <td>{{transaction.id}}</td> 
+            <td><a href="#!cadastrotransaction/{{subaccount.id}}/{{transaction.id}}">{{transaction.description}}</a></td>
+            <td>{{transaction.payment | currency}}</td>
+            <td><a ng-show="transaction.detailLink && transaction.detailLink.length"  target="_blank" href="{{transaction.detailLink}}"><i class='fas fa-check-circle'></i></a></td>
+            <td>{{transaction.deposit | currency}}</td>
+            <td>{{transaction.balance | currency}}</td>
+            <!--<td><a href="#!cadastrosubaccount/{{subaccount.id}}">[Editar]</a></td>-->
+            <td><a href="" ng-click="excluir(transaction)">[Excluir]</a></td>
+        </tr>
+    </tbody>
+
+</table>
+</div>

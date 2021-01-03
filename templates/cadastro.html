@@ -1,27 +1,27 @@
-<h1>Cadastro</h1>
-<form name="cadastroProdutosForm">
-    <div>
-        <label for="codigo">Código: </label>
-        <input id="codigo" name="codigo" type="text" ng-model="produto.id"/>
-    </div>
+<h1>Account registration</h1>
+<form name="cadastroAccountsForm">
+    <fieldset>
+        <div class="row">
+            <label for="code">Code </label>
+            <input id="code" name="code" type="text" ng-model="account.id" readonly/>
+        </div>
 
-    <div>
-        <label for="descricao">Descrição </label>
-        <input id="descricao" name="descricao" type="text" ng-model="produto.descricao" minlength="3" required/>
-        <span class="w3-text-red" ng-show="cadastroProdutosForm.descricao.$dirty && cadastroProdutosForm.descricao.$error.required">O campo descrição é obrigatório!</span>
-        <span class="w3-text-red" ng-show="cadastroProdutosForm.descricao.$dirty && cadastroProdutosForm.descricao.$error.minlength">O campo descrição precisa ter no mínimo 3 caracteres!</span>
-    </div>
+        <div class="row">
+            <label for="description">Descrição </label>
+            <input id="description" name="description" type="text" ng-model="account.description" minlength="3" required autofocus/>
+            <span class="w3-text-red" ng-show="cadastroAccountsForm.description.$dirty && cadastroAccountsForm.description.$error.required">O campo description é obrigatório!</span>
+        </div>
 
-    <div>
-        <label for="preco">Preço: </label>
-        <input id="preco" name="preco" type="text" ng-model="produto.preco" required/>
-        <span class="aviso" ng-show="cadastroProdutosForm.preco.$dirty && cadastroProdutosForm.preco.$error.required">O campo preço é obrigatório!</span>
-    </div>
+<!--        <div class="row">
+            <label for="preco">Preço: </label>
+            <input id="preco" name="preco" type="number" ng-model="account.preco" required/>
+            <span class="w3-text-red" ng-show="cadastroAccountsForm.preco.$dirty && cadastroAccountsForm.preco.$error.required">O campo preço é obrigatório!</span>
+        </div>-->
+    </fieldset>
 
-    <br>
-    <div>
-        <button ng-click="salvar(produto)" ng-disabled="cadastroProdutosForm.$invalid"> Salvar </button>
-        <button ng-click="salvarCadastrarNovo(produto)" ng-disabled="cadastroProdutosForm.$invalid"> Salvar e Cadastrar Novo </button>
+    <div class="row">
+        <button ng-click="salvar(account)" ng-disabled="cadastroAccountsForm.$invalid"> Salvar </button>
+        <button ng-click="salvarCadastrarNovo(account)" ng-disabled="cadastroAccountsForm.$invalid"> Salvar e Cadastrar Novo </button>
         <button ng-click="cancelar()"> Cancelar </button>
     </div>
 </form>

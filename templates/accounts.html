@@ -1,0 +1,27 @@
+<h1>Accouts</h1>
+<div class="w3-container">
+
+<table class="w3-table-all">
+    <thead>
+        <tr class="w3-green">
+            <th>Code</th>
+            <th>Description</th>
+            <th>Sub accounts</th>
+            <th>Balance</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr data-ng-repeat="account in accounts track by $index" ng-dblclick="editar(account)" class="w3-hover-blue">
+            <td>{{account.id}}</td> 
+            <td><a href="#!cadastro/{{account.id}}">{{account.description}}</a></td>
+            <td>{{account.accountsCount}}</td>
+            <td>{{account.balance | currency}}</td>
+            <td><a href="#!subaccounts/{{account.id}}">[Editar]</a></td>
+            <td><a href="" ng-click="excluir(account)">[Excluir]</a></td>
+        </tr>
+    </tbody>
+
+</table>
+</div>

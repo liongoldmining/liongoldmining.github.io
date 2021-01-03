@@ -1,0 +1,21 @@
+label{
+    float: left;
+    width: 100px;
+    text-align: right;
+    padding-right: 10px;
+}
+input{
+    float: left;
+}
+
+fieldset{
+    border: none;
+}
+
+.row{
+    width: auto;
+    clear: left;
+    display: block;
+    margin: 10px;
+    padding: 5px;
+}

@@ -1,0 +1,42 @@
+<h1>Account of [{{account.description}}] <br/> Transactions of Sub Account [{{subaccount.description}}]</h1>
+[ <a href="#!accounttransactions/{{subaccount.id}}">Transactions</a> | <a href="#!cadastrotransaction/{{subaccount.id}}">Registration transactions</a> ]
+
+<form name="cadastroTransactionForm">
+    <fieldset>
+        <div class="row">
+            <label for="code">Code </label>
+            <input id="code" name="code" type="text" ng-model="transaction.id" readonly/>
+        </div>
+
+        <div class="row">
+            <label for="description">Description </label>
+            <input id="description" name="description" type="text" ng-model="transaction.description" minlength="3" required autofocus/>
+            <span class="w3-text-red" ng-show="cadastroTransactionForm.description.$dirty && cadastroTransactionForm.description.$error.required">O campo description é obrigatório!</span>
+        </div>
+
+        <div class="row">
+            <label for="payment">Payment: </label>
+            <input id="payment" name="payment" type="number" ng-model="transaction.payment"/>
+            <!--<span class="w3-text-red" ng-show="cadastroTransactionForm.payment.$dirty">O campo payment é obrigatório!</span>-->
+        </div>
+
+        <div class="row">
+            <label for="detailLink">Proof Link </label>
+            <input id="detailLink" name="detailLink" type="text" ng-model="transaction.detailLink" minlength="3" autofocus/>
+            <!--<span class="w3-text-red" ng-show="">O campo detailLink é obrigatório!</span>-->
+        </div>
+
+        <div class="row">
+            <label for="deposit">Deposit: </label>
+            <input id="deposit" name="deposit" type="number" ng-model="transaction.deposit"/>
+            <!--<span class="w3-text-red" ng-show="cadastroTransactionForm.deposit.$dirty">O campo deposit é obrigatório!</span>-->
+        </div>
+    </fieldset>
+
+    <div class="row">
+        <button ng-click="salvar(subaccount.id, transaction)" ng-disabled="cadastroTransactionForm.$invalid"> Salve </button>
+        <button ng-click="salvarCadastrarNovo(subaccount.id, transaction)" ng-disabled="cadastroTransactionForm.$invalid"> Salve and New Registration </button>
+        <button ng-click="cancelar()"> Cancelar </button>
+    </div>
+</form>
+
