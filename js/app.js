@@ -1,6 +1,6 @@
 var app = angular.module('accountsApp', ['ngRoute', 'ngResource']);
 
-var baseUrl = "http://liongoldmining-investor.herokuapp.com";
+var baseUrl = "https://liongoldmining-investor.herokuapp.com";
 
 app.config(function ($routeProvider) {
 
