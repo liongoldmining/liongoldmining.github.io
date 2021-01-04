@@ -10,16 +10,18 @@
             <th>Balance</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         <tr data-ng-repeat="account in accounts track by $index" ng-dblclick="editar(account)" class="w3-hover-blue">
             <td>{{account.id}}</td> 
-            <td><a href="#!cadastro/{{account.id}}">{{account.description}}</a></td>
+            <td>{{account.description}}</td>
             <td>{{account.accountsCount}}</td>
             <td>{{account.balance | currency}}</td>
-            <td><a href="#!subaccounts/{{account.id}}">[Editar]</a></td>
-            <td><a href="" ng-click="excluir(account)">[Excluir]</a></td>
+            <td><a href="#!cadastro/{{account.id}}">[Edit Account]</a></td>
+            <td><a href="#!subaccounts/{{account.id}}">[View Sub Accounts]</a></td>
+            <td><a href="" ng-click="excluir(account)"><i class="material-icons">delete</i></a></td>
         </tr>
     </tbody>
 

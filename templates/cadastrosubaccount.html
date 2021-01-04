@@ -1,5 +1,5 @@
 <h1>Sub accounts of [{{parentAccount.description}}]</h1>
-[ <a href="#!subaccounts/{{parentAccount.id}}">Sub Accounts</a> | <a href="#!cadastrosubaccount/{{parentAccount.id}}">Registration sub accounts</a> ]
+[ <a href="#!subaccounts/{{parentAccount.id}}">List Sub Accounts</a> | <a href="#!cadastrosubaccount/{{parentAccount.id}}"><i class="material-icons" style="font-size:18px;">add_circle</i> New Sub Account</a> ]
 
 <form name="cadastroSubAccountsForm">
     <fieldset>
@@ -22,9 +22,9 @@
     </fieldset>
 
     <div class="row">
-        <button ng-click="salvar(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Salvar </button>
-        <button ng-click="salvarCadastrarNovo(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Salvar e Cadastrar Novo </button>
-        <button ng-click="cancelar()"> Cancelar </button>
+        <button ng-click="salvar(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Salve </button>
+        <button ng-click="salvarCadastrarNovo(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Save and Add New </button>
+        <button ng-click="cancelar()"> Cancel </button>
     </div>
 </form>
 

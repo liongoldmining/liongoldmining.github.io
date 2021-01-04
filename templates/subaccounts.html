@@ -1,5 +1,5 @@
-<h1>Sub accouts of [{{account.description}}]</h1>
-[ <a href="#!subaccounts/{{account.id}}">Sub Accounts</a> | <a href="#!cadastrosubaccount/{{account.id}}">Registration sub accounts</a> ]
+<h1>Sub accounts of [{{account.description}}]</h1>
+[ <a href="#!subaccounts/{{account.id}}">List Sub Accounts</a> | <a href="#!cadastrosubaccount/{{account.id}}"><i class="material-icons" style="font-size:18px;">add_circle</i> New Sub Account</a> ]
 
 <div class="w3-container">
 
@@ -12,16 +12,18 @@
             <th>Balance</th>
             <th></th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         <tr data-ng-repeat="subaccount in subaccounts track by $index" ng-dblclick="editar(subaccount)" class="w3-hover-blue">
             <td>{{subaccount.id}}</td> 
             <td><a href="#!cadastrosubaccount/{{account.id}}/{{subaccount.id}}">{{subaccount.description}}</a></td>
-            <td>{{subaccount.transactionsCount}}</td>
-            <td>{{subaccount.balance | currency}}</td>
-            <td><a href="#!accounttransactions/{{subaccount.id}}">[Editar]</a></td>
-            <td><a href="" ng-click="excluir(subaccount)">[Excluir]</a></td>
+            <td style="text-align: center;">{{subaccount.transactionsCount}}</td>
+            <td style="text-align: right;padding-right: 20px">{{subaccount.balance | currency}}</td>
+            <td style="padding-left: 20px"><a href="#!cadastrosubaccount/{{account.id}}/{{subaccount.id}}">[Edit Sub Account]</a></td>
+            <td><a href="#!accounttransactions/{{subaccount.id}}">[View Transactions]</a></td>
+            <td><a href="" ng-click="excluir(subaccount)"><i class="material-icons">delete</i></a></td>
         </tr>
     </tbody>
 

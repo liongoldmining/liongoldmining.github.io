@@ -7,7 +7,7 @@
         </div>
 
         <div class="row">
-            <label for="description">Descrição </label>
+            <label for="description">Description </label>
             <input id="description" name="description" type="text" ng-model="account.description" minlength="3" required autofocus/>
             <span class="w3-text-red" ng-show="cadastroAccountsForm.description.$dirty && cadastroAccountsForm.description.$error.required">O campo description é obrigatório!</span>
         </div>
@@ -20,9 +20,9 @@
     </fieldset>
 
     <div class="row">
-        <button ng-click="salvar(account)" ng-disabled="cadastroAccountsForm.$invalid"> Salvar </button>
-        <button ng-click="salvarCadastrarNovo(account)" ng-disabled="cadastroAccountsForm.$invalid"> Salvar e Cadastrar Novo </button>
-        <button ng-click="cancelar()"> Cancelar </button>
+        <button ng-click="salvar(account)" ng-disabled="cadastroAccountsForm.$invalid"> Save </button>
+        <button ng-click="salvarCadastrarNovo(account)" ng-disabled="cadastroAccountsForm.$invalid"> Save and Add New </button>
+        <button ng-click="cancelar()"> Cancel </button>
     </div>
 </form>
 
