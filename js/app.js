@@ -1,7 +1,7 @@
 var app = angular.module('accountsApp', ['ngRoute', 'ngResource']);
 
-//var baseUrl = "https://liongoldmining-investor.herokuapp.com/lionapi";
-var baseUrl = "http://localhost:8080/lionapi";
+var baseUrl = "https://liongoldmining-investor.herokuapp.com/lionapi";
+//var baseUrl = "http://localhost:8080/lionapi";
 
 app.config(function ($routeProvider) {
 
