@@ -3,15 +3,15 @@
 
 <form name="cadastroTransactionForm">
     <fieldset>
-        <div class="row">
+<!--        <div class="row">
             <label for="code">Code </label>
             <input id="code" name="code" type="text" ng-model="transaction.id" readonly/>
-        </div>
+        </div>-->
 
 
         <div class="row">
             <label for="transactionDate">Date </label>
-            <input form value="{{transaction.transactionDate | date:'yyyy-MM-dd'}}" id="transactionDate" name="transactionDate" type="date" ng-model="transaction.transactionDate" date-fix />
+            <input type="date" value="{{transaction.transactionDate !== undefined ? transaction.transactionDate : today | date: 'yyyy-MM-dd'}}" id="transactionDate" name="transactionDate" ng-model="transaction.transactionDate" date-fix />
             <span class="w3-text-red" ng-show="cadastroTransactionForm.transactionDate.$dirty && cadastroTransactionForm.transactionDate.$error.required">O campo description é obrigatório!</span>
         </div>
         
@@ -42,7 +42,7 @@
 
     <div class="row">
         <button ng-click="salvar(subaccount.id, transaction)" ng-disabled="cadastroTransactionForm.$invalid"> Save </button>
-        <button ng-click="salvarCadastrarNovo(subaccount.id, transaction)" ng-disabled="cadastroTransactionForm.$invalid">  Save and Add New  </button>
+        <!--<button ng-click="salvarCadastrarNovo(subaccount.id, transaction)" ng-disabled="cadastroTransactionForm.$invalid">  Save and Add New  </button>-->
         <button ng-click="cancelar()"> Cancel </button>
     </div>
 </form>

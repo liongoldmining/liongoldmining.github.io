@@ -3,10 +3,10 @@
 
 <form name="cadastroSubAccountsForm">
     <fieldset>
-        <div class="row">
+<!--        <div class="row">
             <label for="code">Code </label>
             <input id="code" name="code" type="text" ng-model="subaccount.id" readonly/>
-        </div>
+        </div>-->
 
         <div class="row">
             <label for="description">Description </label>
@@ -23,7 +23,7 @@
 
     <div class="row">
         <button ng-click="salvar(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Salve </button>
-        <button ng-click="salvarCadastrarNovo(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Save and Add New </button>
+        <!--<button ng-click="salvarCadastrarNovo(parentAccount.id, subaccount)" ng-disabled="cadastroSubAccountsForm.$invalid"> Save and Add New </button>-->
         <button ng-click="cancelar()"> Cancel </button>
     </div>
 </form>

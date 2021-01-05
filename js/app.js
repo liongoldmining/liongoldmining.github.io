@@ -1,6 +1,7 @@
 var app = angular.module('accountsApp', ['ngRoute', 'ngResource']);
 
-var baseUrl = "https://liongoldmining-investor.herokuapp.com";
+//var baseUrl = "https://liongoldmining-investor.herokuapp.com/lionapi";
+var baseUrl = "http://localhost:8080/lionapi";
 
 app.config(function ($routeProvider) {
 
@@ -52,51 +53,59 @@ app.controller('TabelaAccountsController', function ($scope, AccountsService) {
 
 app.controller('SubAccountsController', function ($routeParams, $scope, $location, AccountsService, SubAccountsService) {
 
-    var id = $routeParams.id;
+    var accountId = $routeParams.id;
 
-    listarSubAccounts(id);
+    listSubAccounts(accountId);
     
-    function listarSubAccounts(id) {
-        AccountsService.getAccount(id).then(function (account) {
+    function listSubAccounts(accountId) {
+        console.log("listSubAccounts) accountId: " + accountId);
+        AccountsService.getAccount(accountId).then(function (account) {
+            console.log("listSubAccounts\AccountsService.getAccount) account: " + account.valueOf());
             $scope.account = account;
-            $scope.subaccounts = account.subAccounts;
         });
-    }    
+        SubAccountsService.findAllByParentAccountId(accountId).then(function (subaccounts) {
+            console.log("listSubAccounts\SubAccountsService.findAllByParentAccountId) subaccounts: " + subaccounts.valueOf());
+            $scope.subaccounts = subaccounts;
+        });
+    };    
     
     $scope.excluir = function (subaccount) {
-        SubAccountsService.excluir(subaccount).then(redirecionarTabela());
+        var parentAccountId = $scope.account.id;
+        SubAccountsService.excluir(subaccount).then(refreshSubAccountsTable(parentAccountId));
     };
     
-    function redirecionarTabela() {
-        listarSubAccounts(id);
-    };       
+    function refreshSubAccountsTable(parentAccountId) {
+        console.log("listSubAccounts\refreshSubAccountsTable) parentAccountId: " + parentAccountId);
+        listSubAccounts(parentAccountId);
+    };
 });
 
-app.controller('TransactionsController', function ($routeParams, $scope, $location, SubAccountsService) {
+app.controller('TransactionsController', function ($routeParams, $scope, $location, AccountsService, SubAccountsService, TransactionsService) {
 
-    var id = $routeParams.id;
+    var subaccountId = $routeParams.id;
 
-    if (id) {
-        SubAccountsService.getAccount(id).then(function (subaccount) {
-            $scope.account = subaccount.parentAccount;
+    listTransactions(subaccountId);
+
+    function listTransactions(subaccountId) {
+        SubAccountsService.getAccount(subaccountId).then(function (subaccount) {
             $scope.subaccount = subaccount;
-            $scope.accountTransactions = subaccount.accountTransactions;
+            AccountsService.getAccount($scope.subaccount.parentAccount).then(function (account) {
+                $scope.account = account;
+            });
         });
-    } else {
-        listarSubAccounts();
-    }
-    
-    
-    function listarSubAccounts() {
-        SubAccountsService.listar().then(function (subaccount) {
-            $scope.accountTransactions = subaccount.accountTransactions;
+        TransactionsService.listar(subaccountId).then(function (accountTransactions) {
+            $scope.accountTransactions = accountTransactions;
         });
-    }    
+    }; 
     
-    $scope.excluir = function (subaccount) {
-        SubAccountsService.excluir(subaccount).then(listarSubAccounts);
+    $scope.excluir = function (transaction) {
+        TransactionsService.excluir(transaction).then(refreshTransactionsTable($scope.subaccount.id));
     };
-       
+
+    function refreshTransactionsTable(subaccountId) {
+        console.log("TransactionsController\refreshTransactionsTable) parentAccountId: " + subaccountId);
+        listTransactions(subaccountId);
+    };    
 });
 
 app.controller('CadastroSubAccountsController', function ($routeParams, $scope, $location, AccountsService, SubAccountsService) {
@@ -143,15 +152,17 @@ app.controller('CadastroSubAccountsController', function ($routeParams, $scope, 
     };
 });
 
-app.controller('CadastroTransactionController', function ($routeParams, $scope, $location, SubAccountsService, TransactionsService) {
+app.controller('CadastroTransactionController', function ($routeParams, $filter, $scope, $location, AccountsService, SubAccountsService, TransactionsService) {
 
     var subid = $routeParams.subid;
     var transactionId = $routeParams.tid;
 
 
     SubAccountsService.getAccount(subid).then(function (subaccount) {
-        $scope.account = subaccount.parentAccount;
         $scope.subaccount = subaccount;
+        AccountsService.getAccount(AccountsService.parentAccount).then(function (account) {
+                $scope.account = account;
+        });        
     });
     
     if (transactionId) {
@@ -159,7 +170,7 @@ app.controller('CadastroTransactionController', function ($routeParams, $scope, 
             $scope.transaction = transaction;
         });
     } else {
-        $scope.transaction = {account: $scope.subaccount};
+        $scope.transaction = {account: $scope.subaccount, transactionDate: $filter("date")(Date.now(), 'yyyy-MM-dd')};
     }
 
 
@@ -169,6 +180,7 @@ app.controller('CadastroTransactionController', function ($routeParams, $scope, 
     };
 
     $scope.salvar = function (id, transaction) {
+        delete transaction.account;
         $scope.cadastroTransactionForm.$setPristine();
         salvar(id, transaction).then(redirecionarTabela);
     };
@@ -206,8 +218,7 @@ app.controller('CadastroAccountsController', function ($routeParams, $scope, $lo
     function salvar(account) {
         $scope.account = {};
         return AccountsService.salvar(account);
-    }
-    ;
+    };
 
     $scope.salvar = function (account) {
         $scope.cadastroAccountsForm.$setPristine();
@@ -260,8 +271,8 @@ app.service('SubAccountsService', function (SubAccountsResource) {
         return SubAccountsResource.getAccount({id: id}).$promise;
     };
 
-    this.listar = function () {
-        return SubAccountsResource.listar().$promise;
+    this.findAllByParentAccountId = function (id) {
+        return SubAccountsResource.findAllByParentAccountId({id: id}).$promise;
     };
 
     this.salvar = function (id, subAccount) {
@@ -280,8 +291,8 @@ app.service('TransactionsService', function (TransactionsResource) {
         return TransactionsResource.getTransaction({id: id}).$promise;
     };
 
-    this.listar = function () {
-        return TransactionsResource.listar().$promise;
+    this.listar = function (id) {
+        return TransactionsResource.listar({id: id}).$promise;
     };
 
     this.salvar = function (id, transaction) {
@@ -295,9 +306,7 @@ app.service('TransactionsService', function (TransactionsResource) {
 });
 
 app.factory('AccountsResource', function ($resource) {
-    return $resource(baseUrl + '/lionapi/accounts/:id', {}, {
-//    return $resource('http://localhost:8080/CRUD-back/api/accounts/:id', {}, {
-//    return $resource('https://api-rest-accounts-tales.herokuapp.com/api/accounts/:id', {}, {
+    return $resource(baseUrl + '/accounts/:id', {}, {
         atualizar: {
             method: 'PUT'
         },
@@ -306,7 +315,8 @@ app.factory('AccountsResource', function ($resource) {
             isArray: true
         },
         getAccount: {
-            method: 'GET'
+            method: 'GET',
+            cache : false
         },
         salvar: {
             method: 'POST'
@@ -319,18 +329,21 @@ app.factory('AccountsResource', function ($resource) {
 });
 
 app.factory('SubAccountsResource', function ($resource) {
-    return $resource(baseUrl + '/lionapi/subaccounts/:id', {}, {
-//    return $resource('http://localhost:8080/CRUD-back/api/accounts/:id', {}, {
-//    return $resource('https://api-rest-accounts-tales.herokuapp.com/api/accounts/:id', {}, {
+    return $resource(baseUrl + '/subaccounts/:id/:subquery', {}, {
         atualizar: {
             method: 'PUT'
         },
-        listar: {
+        findAllByParentAccountId: {
             method: 'GET',
             isArray: true,
+            params: {
+                id: '@id',
+                subquery: 'byaccountid'
+            }
         },
         getAccount: {
-            method: 'GET'
+            method: 'GET',
+            cache : false
         },
         salvar: {
             method: 'POST'
@@ -343,18 +356,21 @@ app.factory('SubAccountsResource', function ($resource) {
 });
 
 app.factory('TransactionsResource', function ($resource) {
-    return $resource(baseUrl + '/lionapi/transactions/:id', {}, {
-//    return $resource('http://localhost:8080/CRUD-back/api/accounts/:id', {}, {
-//    return $resource('https://api-rest-accounts-tales.herokuapp.com/api/accounts/:id', {}, {
+    return $resource(baseUrl + '/transactions/:id/:subquery', {}, {
         atualizar: {
             method: 'PUT'
         },
         listar: {
             method: 'GET',
-            isArray: true
+            isArray: true,
+            params: {
+                id: '@id',
+                subquery: 'bysubaccountid'
+            }
         },
         getTransaction: {
-            method: 'GET'
+            method: 'GET',
+            cache : false
         },
         salvar: {
             method: 'POST'

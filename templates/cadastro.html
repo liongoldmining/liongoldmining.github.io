@@ -1,10 +1,10 @@
 <h1>Account registration</h1>
 <form name="cadastroAccountsForm">
     <fieldset>
-        <div class="row">
+<!--        <div class="row">
             <label for="code">Code </label>
             <input id="code" name="code" type="text" ng-model="account.id" readonly/>
-        </div>
+        </div>-->
 
         <div class="row">
             <label for="description">Description </label>
@@ -21,7 +21,7 @@
 
     <div class="row">
         <button ng-click="salvar(account)" ng-disabled="cadastroAccountsForm.$invalid"> Save </button>
-        <button ng-click="salvarCadastrarNovo(account)" ng-disabled="cadastroAccountsForm.$invalid"> Save and Add New </button>
+        <!--<button ng-click="salvarCadastrarNovo(account)" ng-disabled="cadastroAccountsForm.$invalid"> Save and Add New </button>-->
         <button ng-click="cancelar()"> Cancel </button>
     </div>
 </form>
